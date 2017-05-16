@@ -16,6 +16,13 @@ select pro.prod_codigo,pro.prod_detalle,st.stoc_cantidad from Producto pro inner
 order by pro.prod_detalle asc;
 //no me gusta
 
-//ej4
+//ej6
+
+select ru.rubr_id, ru.rubr_detalle,
+
+(select count(*) from Producto p inner join Composicion c on p.prod_codigo = c.comp_producto inner join STOCK s on s.stoc_producto = c.comp_producto
+ where p.prod_rubro = ru.rubr_id)
 
 
+from Rubro ru 
+group by ru.rubr_id, ru.rubr_detalle
