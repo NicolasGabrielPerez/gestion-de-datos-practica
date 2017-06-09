@@ -36,22 +36,17 @@
             this.tb_mail = new System.Windows.Forms.TextBox();
             this.tb_telefono = new System.Windows.Forms.TextBox();
             this.tb_calle = new System.Windows.Forms.TextBox();
-            this.tb_nroPiso = new System.Windows.Forms.TextBox();
-            this.tb_localidad = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.cb_dia = new System.Windows.Forms.ComboBox();
-            this.cb_mes = new System.Windows.Forms.ComboBox();
-            this.cb_anio = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
+            this.birthTimePicker = new System.Windows.Forms.DateTimePicker();
+            this.checkHabilitado = new System.Windows.Forms.CheckBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.cbHabilitado = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // bt_crear_chofer
@@ -118,22 +113,8 @@
             // 
             this.tb_calle.Location = new System.Drawing.Point(39, 194);
             this.tb_calle.Name = "tb_calle";
-            this.tb_calle.Size = new System.Drawing.Size(113, 20);
+            this.tb_calle.Size = new System.Drawing.Size(359, 20);
             this.tb_calle.TabIndex = 9;
-            // 
-            // tb_nroPiso
-            // 
-            this.tb_nroPiso.Location = new System.Drawing.Point(228, 194);
-            this.tb_nroPiso.Name = "tb_nroPiso";
-            this.tb_nroPiso.Size = new System.Drawing.Size(113, 20);
-            this.tb_nroPiso.TabIndex = 10;
-            // 
-            // tb_localidad
-            // 
-            this.tb_localidad.Location = new System.Drawing.Point(416, 194);
-            this.tb_localidad.Name = "tb_localidad";
-            this.tb_localidad.Size = new System.Drawing.Size(113, 20);
-            this.tb_localidad.TabIndex = 11;
             // 
             // label1
             // 
@@ -191,97 +172,71 @@
             this.label6.TabIndex = 18;
             this.label6.Text = "Calle";
             // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(227, 178);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(81, 13);
-            this.label7.TabIndex = 19;
-            this.label7.Text = "Numero de piso";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(413, 178);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(53, 13);
-            this.label8.TabIndex = 20;
-            this.label8.Text = "Localidad";
-            // 
-            // cb_dia
-            // 
-            this.cb_dia.FormattingEnabled = true;
-            this.cb_dia.Location = new System.Drawing.Point(158, 85);
-            this.cb_dia.Name = "cb_dia";
-            this.cb_dia.Size = new System.Drawing.Size(36, 21);
-            this.cb_dia.TabIndex = 21;
-            // 
-            // cb_mes
-            // 
-            this.cb_mes.FormattingEnabled = true;
-            this.cb_mes.Location = new System.Drawing.Point(200, 85);
-            this.cb_mes.Name = "cb_mes";
-            this.cb_mes.Size = new System.Drawing.Size(36, 21);
-            this.cb_mes.TabIndex = 22;
-            // 
-            // cb_anio
-            // 
-            this.cb_anio.FormattingEnabled = true;
-            this.cb_anio.Location = new System.Drawing.Point(242, 85);
-            this.cb_anio.Name = "cb_anio";
-            this.cb_anio.Size = new System.Drawing.Size(46, 21);
-            this.cb_anio.TabIndex = 23;
-            this.cb_anio.SelectedIndexChanged += new System.EventHandler(this.cb_anio_SelectedIndexChanged);
-            // 
             // label9
             // 
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(168, 69);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(23, 13);
+            this.label9.Size = new System.Drawing.Size(106, 13);
             this.label9.TabIndex = 24;
-            this.label9.Text = "Dia";
+            this.label9.Text = "Fecha de nacimiento";
             // 
-            // label10
+            // birthTimePicker
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(206, 69);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(27, 13);
-            this.label10.TabIndex = 25;
-            this.label10.Text = "Mes";
+            this.birthTimePicker.Location = new System.Drawing.Point(158, 85);
+            this.birthTimePicker.Name = "birthTimePicker";
+            this.birthTimePicker.Size = new System.Drawing.Size(216, 20);
+            this.birthTimePicker.TabIndex = 27;
+            this.birthTimePicker.ValueChanged += new System.EventHandler(this.birthTimePicker_ValueChanged);
             // 
-            // label11
+            // checkHabilitado
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(245, 69);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(26, 13);
-            this.label11.TabIndex = 26;
-            this.label11.Text = "Año";
+            this.checkHabilitado.AutoSize = true;
+            this.checkHabilitado.Checked = true;
+            this.checkHabilitado.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkHabilitado.Location = new System.Drawing.Point(137, -27);
+            this.checkHabilitado.Name = "checkHabilitado";
+            this.checkHabilitado.Size = new System.Drawing.Size(15, 14);
+            this.checkHabilitado.TabIndex = 29;
+            this.checkHabilitado.UseVisualStyleBackColor = true;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(36, 259);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(87, 13);
+            this.label7.TabIndex = 28;
+            this.label7.Text = "Cliente habilitado";
+            // 
+            // cbHabilitado
+            // 
+            this.cbHabilitado.AutoSize = true;
+            this.cbHabilitado.Checked = true;
+            this.cbHabilitado.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbHabilitado.Location = new System.Drawing.Point(171, 259);
+            this.cbHabilitado.Name = "cbHabilitado";
+            this.cbHabilitado.Size = new System.Drawing.Size(15, 14);
+            this.cbHabilitado.TabIndex = 30;
+            this.cbHabilitado.UseVisualStyleBackColor = true;
+            this.cbHabilitado.CheckedChanged += new System.EventHandler(this.cbHabilitado_CheckedChanged);
             // 
             // Alta_Chofer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(724, 377);
-            this.Controls.Add(this.label11);
-            this.Controls.Add(this.label10);
-            this.Controls.Add(this.label9);
-            this.Controls.Add(this.cb_anio);
-            this.Controls.Add(this.cb_mes);
-            this.Controls.Add(this.cb_dia);
-            this.Controls.Add(this.label8);
+            this.Controls.Add(this.cbHabilitado);
+            this.Controls.Add(this.checkHabilitado);
             this.Controls.Add(this.label7);
+            this.Controls.Add(this.birthTimePicker);
+            this.Controls.Add(this.label9);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.tb_localidad);
-            this.Controls.Add(this.tb_nroPiso);
             this.Controls.Add(this.tb_calle);
             this.Controls.Add(this.tb_telefono);
             this.Controls.Add(this.tb_mail);
@@ -308,21 +263,16 @@
         private System.Windows.Forms.TextBox tb_mail;
         private System.Windows.Forms.TextBox tb_telefono;
         private System.Windows.Forms.TextBox tb_calle;
-        private System.Windows.Forms.TextBox tb_nroPiso;
-        private System.Windows.Forms.TextBox tb_localidad;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.ComboBox cb_dia;
-        private System.Windows.Forms.ComboBox cb_mes;
-        private System.Windows.Forms.ComboBox cb_anio;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.DateTimePicker birthTimePicker;
+        private System.Windows.Forms.CheckBox checkHabilitado;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.CheckBox cbHabilitado;
     }
 }

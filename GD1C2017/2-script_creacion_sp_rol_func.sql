@@ -49,9 +49,12 @@ GO
 
 CREATE PROCEDURE FSOCIETY.sp_insert_rol (@nombre VARCHAR(50), @habilitado BIT) AS 
 BEGIN TRANSACTION T1
-	INSERT INTO FSOCIETY.Roles (Id, Descripcion, Habilitado)
-	VALUES (NEXT VALUE FOR Id, @nombre, @habilitado)
-COMMIT TRANSACTION T1
+	INSERT INTO FSOCIETY.Roles (Descripcion, Habilitado)
+	VALUES (@nombre, @habilitado)
+	
+	if (@@ERROR !=0)
+        ROLLBACK TRANSACTION T1;
+	COMMIT TRANSACTION T1;
 GO
 
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_get_rol_funcionalidades')
@@ -92,5 +95,22 @@ BEGIN TRANSACTION T1
   DELETE FROM FSOCIETY.RolFuncionalidades
    WHERE IdRol = @idrol
      AND IdFuncionalidad = @idfun
+
+	if (@@ERROR !=0)
+        ROLLBACK TRANSACTION T1;
+COMMIT TRANSACTION T1
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_delete_all_funcionalidades')
+DROP PROCEDURE FSOCIETY.sp_delete_all_funcionalidades
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_delete_all_funcionalidades (@idrol INT) AS 
+BEGIN TRANSACTION T1
+  DELETE FROM FSOCIETY.RolFuncionalidades
+   WHERE IdRol = @idrol
+     
+	if (@@ERROR !=0)
+        ROLLBACK TRANSACTION T1;
 COMMIT TRANSACTION T1
 GO

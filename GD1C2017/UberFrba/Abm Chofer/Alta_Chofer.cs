@@ -9,34 +9,34 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using UberFrba.Abm_Cliente;
 using UberFrba.Dao;
+using UberFrba.Mapping;
 
 namespace UberFrba.Abm_Chofer
 {
     public partial class Alta_Chofer : Form
     {
         private DAOChofer dao;
-        private Persona per;
+        private int id;
+        private DAOClientes pers;
         public Alta_Chofer()
         {
             InitializeComponent();
-            for (int i=0; i < 300 ; i++)
-            cb_anio.Items.Insert(i, i + 1900);
-            for (int i=0; i < 31 ; i++)
-            cb_dia.Items.Insert(i,i+1);
-            for (int i = 0; i < 12; i++)
-                cb_mes.Items.Insert(i, i + 1);
-        
-        }
-       Alta_Chofer(DataGridViewRow row)
-        {
-            InitializeComponent();
-            this.Text = "Modifique al cliente";
             this.dao = new DAOChofer();
-            this.Id = 1;
-            this.completarCampos(row);
+            this.pers = new DAOClientes();
+            this.id = 1;
+        }
 
-            Persona personaprevia = new Persona(this.fieldName.Text, this.fieldSurname.Text, this.fieldDocument.Text, this.fieldStreet.Text, this.birthTimePicker.Value, this.clientId);
-            this.idPersona = dao.getIdPersona(personaprevia);
+
+       public Alta_Chofer(DataGridViewRow row)
+       {
+           InitializeComponent();
+           this.dao = new DAOChofer();
+           this.pers = new DAOClientes();
+           this.id = 1;
+           this.completarCampos(row);
+
+           Persona personaprevia = new Persona(this.tb_nombre.Text, this.tb_apellido.Text, this.tb_DNI.Text, this.tb_calle.Text, this.birthTimePicker.Value, this.id);
+           this.id = pers.getIdPersona(personaprevia);
        }
 
 
@@ -48,12 +48,79 @@ namespace UberFrba.Abm_Chofer
 
         private void bt_crear_chofer_Click(object sender, EventArgs e)
         {
-            if (cb_anio.Text != "" && cb_dia.Text != "" && cb_mes.Text != "" && tb_calle.Text != "" && tb_apellido.Text != "" && tb_DNI.Text != "" && tb_localidad.Text != "" && tb_mail.Text != "" && tb_nombre.Text != "" && tb_nroPiso.Text != "" && tb_telefono.Text != "")
+            if (tb_calle.Text != "" && tb_apellido.Text != "" && tb_DNI.Text != "" && tb_mail.Text != "" && tb_nombre.Text != "" && tb_telefono.Text != "")
             {
+                if (this.id != 0)
+                {
+                    updateOrDeleteChofer(dao);
+                }
+                else
+                {
+                    createChofer(dao);
+                }
                 this.Close();
             }
             else
                 MessageBox.Show("Complete todos los datos por favor");
+        }
+
+        private bool createChofer(DAOChofer dao)
+        {
+            bool success = false;
+            if (this.CheckEmptyFields())
+            {
+                if (this.checkDNInot0())
+                {
+
+                    Persona persona = new Persona(this.tb_nombre.Text, this.tb_apellido.Text, this.tb_DNI.Text, this.tb_calle.Text, this.birthTimePicker.Value, this.id);
+                    Chofer chofer = new Chofer(this.id, this.tb_telefono.Text, this.tb_mail.Text, this.cbHabilitado.Checked);
+
+                    try
+                    {
+                        pers.crearPersona(persona);
+                        chofer.setIdChofer(pers.getIdPersona(persona));
+                        dao.crearChofer(chofer);
+                        success = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message.ToString());
+                    }
+
+                    MessageBox.Show("El cliente fue creado exitosamente");
+                    this.Close();
+                }
+            }
+            return success;
+        }
+
+
+        private bool verifyFields(DAOClientes pers ,DAOChofer dao, Persona persona, Chofer chofer)
+        {
+            if (pers.getDNIById(persona) != 0)
+            {
+                MessageBox.Show("El numero de DNI ya existe para otra persona", "DNI ya existe");
+                return false;
+            }
+            if (dao.getMailById(chofer) != 0)
+            {
+                MessageBox.Show("La direccion de mail ya existe para otra persona", "Mail ya existe");
+                return false;
+            }
+            return true;
+        }
+
+
+        private void updateOrDeleteChofer(DAOChofer dao)
+        {
+            Persona persona = new Persona(this.tb_nombre.Text, this.tb_apellido.Text, this.tb_DNI.Text, this.tb_calle.Text, this.birthTimePicker.Value, this.id);
+            Chofer chofer = new Chofer(this.id, this.tb_telefono.Text, this.tb_mail.Text, this.cbHabilitado.Checked);
+
+            verifyFields(pers,dao, persona, chofer);
+            pers.modificarPersona(persona);
+            dao.modificarChofer(chofer);
+
+            MessageBox.Show("Cambios guardados");
         }
 
         private void bt_volver_abm_Click(object sender, EventArgs e)
@@ -107,14 +174,49 @@ namespace UberFrba.Abm_Chofer
         }
         private void completarCampos(DataGridViewRow row)
         {
-            per.fieldName.Text = row.Cells["Nombre"].Value.ToString();
-            this.fieldSurname.Text = row.Cells["Apellido"].Value.ToString();
-            this.fieldDocument.Text = row.Cells["DNI"].Value.ToString();
-            this.fieldTelephone.Text = row.Cells["Telefono"].Value.ToString();
-            this.fieldMail.Text = row.Cells["Email"].Value.ToString();
+            this.tb_nombre.Text = row.Cells["Nombre"].Value.ToString();
+            this.tb_apellido.Text = row.Cells["Apellido"].Value.ToString();
+            this.tb_DNI.Text = row.Cells["DNI"].Value.ToString();
+            this.tb_telefono.Text = row.Cells["Telefono"].Value.ToString();
+            this.tb_mail.Text = row.Cells["Email"].Value.ToString();
             this.birthTimePicker.Text = row.Cells["Fecha de Nacimiento"].Value.ToString();
-            this.fieldStreet.Text = row.Cells["Direccion"].Value.ToString();
-            this.checkHabilitado.Checked = row.Cells["Habilitado"].ToString();
+            this.tb_calle.Text = row.Cells["Direccion"].Value.ToString();
+            this.cbHabilitado.Checked = (bool)row.Cells["Habilitado"].Value;
+        }
+
+
+        public bool CheckEmptyFields()
+        {
+            List<TextBox> inputs = new List<TextBox> {this.tb_nombre, this.tb_apellido, this.tb_DNI, this.tb_mail, 
+                this.tb_telefono, this.tb_calle};
+            if (inputs.Any((t) => t.Text == ""))
+            {
+                MessageBox.Show("Complete todos los campos");
+                return false;
+            }
+            else return true;
+
+        }
+
+        private bool checkDNInot0()
+        {
+            if (this.tb_DNI.Text.Equals("0"))
+            {
+                MessageBox.Show("El número de documento no puede ser 0 ni vacio");
+                return false;
+            }
+            else return true;
+        }
+
+
+        private void birthTimePicker_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cbHabilitado_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

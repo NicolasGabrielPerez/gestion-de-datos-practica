@@ -29,13 +29,13 @@ namespace UberFrba.Dao
 
         private String getSelectClientQuery(String filtro  , String dato)
         {
-            return getAllChoferQuery() + " and '" + filtro +
+            return getAllChoferQuery() + " and " + filtro +
                                        " like '%" + dato + "%'";
         }
 
-        internal DataTable getClientById(int id)
+        internal DataTable getChoferById(int id)
         {
-            String query = getAllChoferQuery() + "and cli.Id = '" + id + "'";
+            String query = getAllChoferQuery() + "and ch.Id = '" + id + "'";
             return connector.select_query(query);
         }
 
@@ -45,6 +45,7 @@ namespace UberFrba.Dao
             Dictionary<String, Object> dic = new Dictionary<String, Object>();
             dic.Add("@telefono", chofer.telefono);
             dic.Add("@mail", chofer.email);
+            dic.Add("@idChofer", chofer.id);
             dic.Add("@habilitado", chofer.habilitado);
 
             connector.executeProcedureWithParameters("FSOCIETY.sp_modificar_chofer", dic);//todo sp
@@ -80,6 +81,22 @@ namespace UberFrba.Dao
                 public DataTable buscarTodosLosChoferes() {
             return connector.select_query(getAllChoferQuery());
         }
-        }
+
+
+
+                internal int getMailById(Chofer chofer)
+                {
+                    DataBaseConnector db;
+                    db = DataBaseConnector.getInstance();
+                    DataTable dt = db.select_query("Select TOP 1 Email from FSOCIETY.Chofer where Email= '"
+                                                     + chofer.email + "and Id <> " + chofer.id + "'");
+                    
+                    if (dt.Rows.Count > 0)
+                        return dt.Rows[0].Field<int>(1);
+                    else return 0;
+                }
+
+                public int valorverdad { get; set; }
+    }
     }
 

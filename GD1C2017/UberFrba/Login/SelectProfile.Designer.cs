@@ -75,6 +75,7 @@
             this.Name = "SelectProfile";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SelectProfile";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.SelectProfile_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 

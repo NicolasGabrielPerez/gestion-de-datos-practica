@@ -108,6 +108,7 @@
     <Compile Include="Dao\DAOClientes.cs" />
     <Compile Include="Dao\DAORoles.cs" />
     <Compile Include="Dao\DAOUsers.cs" />
+    <Compile Include="Dao\DaoViajes.cs" />
     <Compile Include="Facturacion\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -132,11 +133,15 @@
     <Compile Include="Login\SelectProfile.Designer.cs">
       <DependentUpon>SelectProfile.cs</DependentUpon>
     </Compile>
+    <Compile Include="Mapping\ViajeAuto.cs" />
     <Compile Include="Mapping\Chofer.cs" />
     <Compile Include="Mapping\Funcionalidades.cs" />
     <Compile Include="Mapping\Cliente.cs" />
     <Compile Include="Mapping\Rol.cs" />
     <Compile Include="Mapping\Usuario.cs" />
+    <Compile Include="Mapping\ViajeChofer.cs" />
+    <Compile Include="Mapping\Viajes.cs" />
+    <Compile Include="Mapping\ViajePersona.cs" />
     <Compile Include="Menu\MainMenu.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -146,18 +151,19 @@
     <Compile Include="Menu\MenuItemFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Registro Viajes\Form1.cs">
+    <Compile Include="Registro Viajes\Viaje.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Registro Viajes\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Registro Viajes\Viaje.Designer.cs">
+      <DependentUpon>Viaje.cs</DependentUpon>
     </Compile>
-    <Compile Include="Rendicion Viajes\Form1.cs">
+    <Compile Include="Rendicion Viajes\RendirViajes.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Rendicion Viajes\Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Rendicion Viajes\RendirViajes.Designer.cs">
+      <DependentUpon>RendirViajes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utils\DateUtils.cs" />
     <Compile Include="Utils\SHA256.cs" />
     <EmbeddedResource Include="Abm Chofer\ABMChofer.resx">
       <DependentUpon>ABMChofer.cs</DependentUpon>
@@ -204,6 +210,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Registro Viajes\Viaje.resx">
+      <DependentUpon>Viaje.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Rendicion Viajes\RendirViajes.resx">
+      <DependentUpon>RendirViajes.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

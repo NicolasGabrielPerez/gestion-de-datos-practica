@@ -59,9 +59,7 @@ namespace UberFrba.Dao
 
         public int getIdPersona(Persona persona)
         {
-            DataBaseConnector db;
-            db = DataBaseConnector.getInstance();
-            DataTable dt = db.select_query("Select Id from FSOCIETY.Personas where Nombre = '" + persona.nombre + "' and Apellido = '" + persona.apellido + "' and DNI = '" + persona.dni + "' and Direccion = '" + persona.direccion + "'");
+            DataTable dt = connector.select_query("Select Id from FSOCIETY.Personas where Nombre = '" + persona.nombre + "' and Apellido = '" + persona.apellido + "' and DNI = '" + persona.dni + "' and Direccion = '" + persona.direccion + "'");
 
             int idpersona = (int)dt.Rows[0][0];
             return idpersona;
@@ -91,10 +89,8 @@ namespace UberFrba.Dao
         }
 
        public int getIdcliente(Cliente cliente)
-        {
-            DataBaseConnector db;
-            db = DataBaseConnector.getInstance();
-            DataTable dt = db.select_query("Select Id from FSOCIETY.Cliente where Telefono = '" + cliente.telefono
+       {
+           DataTable dt = connector.select_query("Select Id from FSOCIETY.Cliente where Telefono = '" + cliente.telefono
                                             + "' and Email = '" + cliente.mail + "' and Codigo_Postal = '" + cliente.zipcode + "'");
             
             return dt.Rows[1].Field<int>(1);
@@ -131,9 +127,7 @@ namespace UberFrba.Dao
 
        public int getDNIById(Persona persona)
        {
-           DataBaseConnector db;
-           db = DataBaseConnector.getInstance();
-           DataTable dt = db.select_query("Select DNI from FSOCIETY.Personas where DNI = '" 
+           DataTable dt = connector.select_query("Select DNI from FSOCIETY.Personas where DNI = '" 
                                             + persona.dni + "and Id <> " + persona.idPerson + "'");
 
            if (dt.Rows.Count > 0)
@@ -143,9 +137,7 @@ namespace UberFrba.Dao
 
        public int getMailById(Cliente cliente)
        {
-           DataBaseConnector db;
-           db = DataBaseConnector.getInstance();
-           DataTable dt = db.select_query("Select TOP 1 Email from FSOCIETY.Cliente where Email= '"
+           DataTable dt = connector.select_query("Select TOP 1 Email from FSOCIETY.Cliente where Email= '"
                                             + cliente.mail + "and Id <> " + cliente.idCliente + "'");
 
            if (dt.Rows.Count > 0)

@@ -53,7 +53,7 @@ namespace UberFrba.Login
         private void showMainMenu() {
             UberFrba.Menu.MainMenu menu = new UberFrba.Menu.MainMenu(user);
             this.Hide();//reimplementar con un close.
-            menu.Show();
+            menu.ShowDialog();
         }
 
         public void present()
@@ -67,6 +67,11 @@ namespace UberFrba.Login
                 user.setRol(roles[0]);
                 showMainMenu();
             }
+        }
+
+        private void SelectProfile_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)

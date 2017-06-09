@@ -11,15 +11,19 @@ namespace UberFrba.Mapping
         public Int32 id;
         public string telefono;
         public string email;
-        public string habilitado { get; set; }
+        public bool habilitado { get; set; }
 
-        public Chofer(Int32 ide, string telefo, string mail, string avtivo) {
+        public Chofer(Int32 ide, string telefo, string mail, bool avtivo) {
             this.email = mail;
             this.telefono = telefo;
             this.habilitado = avtivo;
             this.id = ide;
+       
         }
 
-
+        internal void setIdChofer(int p)
+        {
+            this.id = p;
+        }
     }
 }

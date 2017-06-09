@@ -51,7 +51,7 @@ namespace UberFrba.Dao
         }
 
         private void updateUserRetries(Usuario user){
-            Dictionary<String, String> dic = new Dictionary<String, String>();
+            Dictionary<String, Object> dic = new Dictionary<String, Object>();
             dic.Add("@reintentos", user.getIntentos().ToString());
             dic.Add("idUsuario", user.getId().ToString());
             db.executeQueryWithParameters("update FSOCIETY.Usuarios set Reintentos = @reintentos where id = @idUsuario",dic);

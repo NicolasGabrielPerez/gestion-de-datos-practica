@@ -19,20 +19,24 @@ namespace UberFrba.Utils
         private static DataBaseConnector instance = null;
         private SqlConnection connectionString;
 
-        
-        private DataBaseConnector() {
+
+        private DataBaseConnector()
+        {
             this.connectionString = new SqlConnection();
             this.connectionString.ConnectionString = "Server=" + server + "\\SQLSERVER2012;DATABASE=GD1C2017;UID=" + user + ";PASSWORD=" + password + ";";
         }
 
-        public static DataBaseConnector getInstance() {
-            if (instance == null) {
+        public static DataBaseConnector getInstance()
+        {
+            if (instance == null)
+            {
                 instance = new DataBaseConnector();
             }
             return instance;
         }
 
-        private SqlConnection getConnectionString() {
+        private SqlConnection getConnectionString()
+        {
             return this.connectionString;
         }
 
@@ -41,7 +45,8 @@ namespace UberFrba.Utils
             getConnectionString().Open();
         }
 
-        public void closeConnection() {
+        public void closeConnection()
+        {
             getConnectionString().Close();
         }
 
@@ -56,31 +61,52 @@ namespace UberFrba.Utils
             }
             catch (Exception ex)
             {
+                closeConnection();
                 throw new Exception(ex.Message + " Query: " + query);
             }
         }
 
-        public void executeQueryWithParameters(String query, Dictionary<String,String> dictionary) {
-            openConnection();
-            SqlCommand command = new SqlCommand(query, getConnectionString());
-            foreach(String key in dictionary.Keys){
-                command.Parameters.AddWithValue(key,dictionary[key]);
+        public void executeQueryWithParameters(String query, Dictionary<String, Object> dictionary)
+        {
+            try
+            {
+                openConnection();
+                SqlCommand command = new SqlCommand(query, getConnectionString());
+                foreach (String key in dictionary.Keys)
+                {
+                    command.Parameters.AddWithValue(key, dictionary[key]);
+                }
+                command.ExecuteNonQuery();
+                closeConnection();
             }
-            command.ExecuteNonQuery();
-            closeConnection();
+            catch (Exception ex)
+            {
+                closeConnection();
+                throw new Exception(ex.Message + " Query: " + query);
+            }
+
+
         }
 
         public void executeProcedureWithParameters(String query, Dictionary<String, Object> dictionary)
         {
-            openConnection();
-            SqlCommand command = new SqlCommand(query, getConnectionString());
-            foreach (String key in dictionary.Keys)
+            try
             {
-                command.Parameters.AddWithValue(key, dictionary[key]);
+                openConnection();
+                SqlCommand command = new SqlCommand(query, getConnectionString());
+                foreach (String key in dictionary.Keys)
+                {
+                    command.Parameters.AddWithValue(key, dictionary[key]);
+                }
+                command.CommandType = CommandType.StoredProcedure;
+                command.ExecuteNonQuery();
+                closeConnection();
             }
-            command.CommandType = CommandType.StoredProcedure;
-            command.ExecuteNonQuery();
-            closeConnection();
+            catch (Exception ex)
+            {
+                closeConnection();
+                throw new Exception(ex.Message + " Query: " + query);
+            }
         }
 
 

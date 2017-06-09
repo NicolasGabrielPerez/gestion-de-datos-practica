@@ -286,6 +286,7 @@ GO
 
 ALTER TABLE [FSOCIETY].[Modelos] CHECK CONSTRAINT [FK_Modelos_Marcas]
 GO
+
 ----------------------------------------
 --Turnos
 ----------------------------------------
@@ -311,7 +312,6 @@ CREATE TABLE [FSOCIETY].[Autos](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Patente] [varchar](8) NOT NULL,
 	[IdModelo] [int] NOT NULL,
-	[IdTurno] [int] NOT NULL,
 	[IdChofer] [int] NOT NULL,
 	[Habilitado] [bit] NOT NULL,
  CONSTRAINT [PK_Autos] PRIMARY KEY CLUSTERED 
@@ -336,11 +336,33 @@ GO
 ALTER TABLE [FSOCIETY].[Autos] CHECK CONSTRAINT [FK_Autos_Modelos]
 GO
 
-ALTER TABLE [FSOCIETY].[Autos]  WITH CHECK ADD  CONSTRAINT [FK_Autos_Turnos] FOREIGN KEY([IdTurno])
+----------------------------------------
+--AutosTurnos
+----------------------------------------
+
+CREATE TABLE [FSOCIETY].[AutosTurnos](
+	[IdAuto] [int] NOT NULL,
+	[IdTurno] [int] NOT NULL,
+ CONSTRAINT [PK_AutosTurnos] PRIMARY KEY CLUSTERED 
+(
+	[IdAuto] ASC,
+	[IdTurno] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+ALTER TABLE [FSOCIETY].[AutosTurnos]  WITH CHECK ADD  CONSTRAINT [FK_AutosTurnos_Autos] FOREIGN KEY([IdAuto])
+REFERENCES [FSOCIETY].[Autos] ([Id])
+GO
+
+ALTER TABLE [FSOCIETY].[AutosTurnos] CHECK CONSTRAINT [FK_AutosTurnos_Autos]
+GO
+
+ALTER TABLE [FSOCIETY].[AutosTurnos]  WITH CHECK ADD  CONSTRAINT [FK_AutosTurnos_Turnos] FOREIGN KEY([IdTurno])
 REFERENCES [FSOCIETY].[Turnos] ([Id])
 GO
 
-ALTER TABLE [FSOCIETY].[Autos] CHECK CONSTRAINT [FK_Autos_Turnos]
+ALTER TABLE [FSOCIETY].[AutosTurnos] CHECK CONSTRAINT [FK_AutosTurnos_Turnos]
 GO
 
 ----------------------------------------
@@ -371,16 +393,15 @@ GO
 --Viajes
 ----------------------------------------
 CREATE TABLE [FSOCIETY].[Viaje](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[IdChofer] [int] NOT NULL,
-	[IdAuto] [int] NOT NULL,
 	[IdCliente] [int] NOT NULL,
-	[IdTurno] [int] NOT NULL,
 	[CantKm] [int] NOT NULL,
 	[FechaHoraInicio] [date] NOT NULL,
 	[FechaHoraFin] [date] NOT NULL
  CONSTRAINT [PK_Viaje] PRIMARY KEY CLUSTERED 
 (
-	[IdChofer], [IdCliente], [IdTurno]
+	[Id]
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
@@ -393,27 +414,12 @@ GO
 ALTER TABLE [FSOCIETY].[Viaje] CHECK CONSTRAINT [FK_Viaje_Chofer]
 GO
 
-ALTER TABLE [FSOCIETY].[Viaje]  WITH CHECK ADD  CONSTRAINT [FK_Viaje_Auto] FOREIGN KEY([IdAuto])
-REFERENCES [FSOCIETY].[Autos] ([Id])
-GO
-
-ALTER TABLE [FSOCIETY].[Viaje] CHECK CONSTRAINT [FK_Viaje_Auto]
-GO
-
 ALTER TABLE [FSOCIETY].[Viaje]  WITH CHECK ADD  CONSTRAINT [FK_Viaje_Cliente] FOREIGN KEY([IdCliente])
 REFERENCES [FSOCIETY].[Cliente] ([Id])
 GO
 
 ALTER TABLE [FSOCIETY].[Viaje] CHECK CONSTRAINT [FK_Viaje_Cliente]
 GO
-
-ALTER TABLE [FSOCIETY].[Viaje]  WITH CHECK ADD  CONSTRAINT [FK_Viaje_Turno] FOREIGN KEY([IdTurno])
-REFERENCES [FSOCIETY].[Turnos] ([Id])
-GO
-
-ALTER TABLE [FSOCIETY].[Viaje] CHECK CONSTRAINT [FK_Viaje_Turno]
-GO
-
 ----------------------------------------
 --Facturacion
 ----------------------------------------
@@ -439,13 +445,21 @@ GO
 ALTER TABLE [FSOCIETY].[Facturacion] CHECK CONSTRAINT [FK_Facturacion_Cliente]
 GO
 
+ALTER TABLE [FSOCIETY].[Facturacion]  WITH CHECK ADD  CONSTRAINT [FK_Facturacion_Viaje] FOREIGN KEY([IdViaje])
+REFERENCES [FSOCIETY].[Viaje] ([Id])
+GO
+
+ALTER TABLE [FSOCIETY].[Facturacion] CHECK CONSTRAINT [FK_Facturacion_Viaje]
+GO
+
+
+
 ----------------------------------------
 --Rendicion
 ----------------------------------------
 CREATE TABLE [FSOCIETY].[Rendicion](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[IdChofer] [int] NOT NULL,
-	[IdTurno] [int] NOT NULL,
 	[Fecha] [smalldatetime] NOT NULL,
 	[ImporteTotal] [money] NOT NULL,
  CONSTRAINT [PK_Rendicion] PRIMARY KEY CLUSTERED 
@@ -461,13 +475,6 @@ REFERENCES [FSOCIETY].[Chofer] ([Id])
 GO
 
 ALTER TABLE [FSOCIETY].[Rendicion] CHECK CONSTRAINT [FK_Rendicion_Chofer]
-GO
-
-ALTER TABLE [FSOCIETY].[Rendicion]  WITH CHECK ADD  CONSTRAINT [FK_Rendicion_Turnos] FOREIGN KEY([IdTurno])
-REFERENCES [FSOCIETY].[Turnos] ([Id])
-GO
-
-ALTER TABLE [FSOCIETY].[Rendicion] CHECK CONSTRAINT [FK_Rendicion_Turnos]
 GO
 
 ----------------------------------------
@@ -497,8 +504,9 @@ GO
 
 INSERT INTO FSOCIETY.Funcionalidades(Descripcion,FormName,IdFuncionalidadPadre)
 VALUES('Clientes',NULL,NULL),('Choferes',NULL,NULL),('Autos',NULL,NULL),
-	  ('Alta Cliente','ABMCliente',1),('Baja Cliente',NULL,1),('Alta Chofer',NULL,2),
-	  ('Consultas Autos','Automovil',3);
+	  ('Alta Cliente','ABMCliente',1),('Baja Cliente',NULL,1),('Alta Chofer','ABMChofer',2),
+	  ('Consultas Autos','Automovil',3),('Roles',NULL,NULL),('Abm Roles','AbmRol',8),
+	  ('Viajes',NULL,NULL),('Registrar Viaje','Viaje',10);
 
 GO
 
@@ -561,3 +569,586 @@ EXECUTE FSOCIETY.sp_insert_user @USER,@idPersona
 
 GO
 
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_get_modif_roles')
+DROP PROCEDURE FSOCIETY.sp_get_modif_roles
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_get_modif_roles(@username VARCHAR(50)) 
+AS
+BEGIN TRANSACTION T1
+  /* obtiene roles para admin y todos los roles <> admin para quien no lo sea */
+  SELECT * FROM FSOCIETY.Roles
+  WHERE (ID <> 1) 
+  OR 1 = (SELECT ID
+			FROM FSOCIETY.Usuarios u, FSOCIETY.UsuariosRoles r
+            WHERE u.Username = @username
+            AND r.IdRol = u.IdPersona);
+COMMIT TRANSACTION T1
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_delete_usuarios_roles')
+DROP PROCEDURE FSOCIETY.sp_delete_usuarios_roles
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_delete_usuarios_roles(@id int) AS 
+BEGIN TRANSACTION T1
+	DELETE FSOCIETY.Usuarios where Id = @id 
+COMMIT TRANSACTION T1
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_update_roles')
+DROP PROCEDURE FSOCIETY.sp_get_modif_roles
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_update_roles (@id INT, @nombre VARCHAR(50), @habilitado BIT) 
+AS 
+BEGIN TRANSACTION T1
+	UPDATE FSOCIETY.Roles 
+	SET Descripcion = @nombre,
+        Habilitado = @habilitado
+    WHERE Id = @id;
+	IF @habilitado = 0
+	BEGIN
+		EXECUTE FSOCIETY.sp_delete_usuarios_roles @id;
+	END
+COMMIT TRANSACTION T1;
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_insert_rol')
+DROP PROCEDURE FSOCIETY.sp_insert_rol
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_insert_rol (@nombre VARCHAR(50), @habilitado BIT) AS 
+BEGIN TRANSACTION T1
+	INSERT INTO FSOCIETY.Roles (Id, Descripcion, Habilitado)
+	VALUES (NEXT VALUE FOR Id, @nombre, @habilitado)
+COMMIT TRANSACTION T1
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_get_rol_funcionalidades')
+DROP PROCEDURE FSOCIETY.sp_get_rol_funcionalidades
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_get_rol_funcionalidades(@idrol INT) AS BEGIN
+  /* Lista las funcionalidades que tiene asignado un rol */
+BEGIN TRANSACTION T1
+  SELECT func.Id, func.Descripcion
+    FROM FSOCIETY.Funcionalidades func, FSOCIETY.RolFuncionalidades rolfunc, FSOCIETY.Roles rol
+	WHERE rolfunc.IdRol = @idrol
+     AND func.Id = rolfunc.IdFuncionalidad
+     AND rol.Id = @idrol
+END 
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_insert_funcionalidad')
+DROP PROCEDURE FSOCIETY.sp_insert_funcionalidad
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_insert_funcionalidad (@idrol INT, @idfun INT) AS 
+BEGIN TRANSACTION T1
+  /* agrego funcionalidad si no existe */
+    INSERT INTO FSOCIETY.RolFuncionalidades (idRol, IdFuncionalidad)
+    VALUES (@idrol, @idfun)
+    if (@@ERROR !=0)
+        ROLLBACK TRANSACTION T1;
+COMMIT TRANSACTION T1
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_delete_funcionalidad')
+DROP PROCEDURE FSOCIETY.sp_delete_funcionalidad
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_delete_funcionalidad (@idrol INT, @idfun INT) AS 
+BEGIN TRANSACTION T1
+  DELETE FROM FSOCIETY.RolFuncionalidades
+   WHERE IdRol = @idrol
+     AND IdFuncionalidad = @idfun
+COMMIT TRANSACTION T1
+GO
+
+----------------------------------
+-- Store roles
+----------------------------------
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_get_modif_roles')
+DROP PROCEDURE FSOCIETY.sp_get_modif_roles
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_get_modif_roles(@username VARCHAR(50)) 
+AS
+BEGIN TRANSACTION T1
+  /* obtiene roles para admin y todos los roles <> admin para quien no lo sea */
+  SELECT * FROM FSOCIETY.Roles
+  WHERE (ID <> 1) 
+  OR 1 = (SELECT ID
+			FROM FSOCIETY.Usuarios u, FSOCIETY.UsuariosRoles r
+            WHERE u.Username = @username
+            AND r.IdRol = u.IdPersona);
+COMMIT TRANSACTION T1
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_delete_usuarios_roles')
+DROP PROCEDURE FSOCIETY.sp_delete_usuarios_roles
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_delete_usuarios_roles(@id int) AS 
+BEGIN TRANSACTION T1
+	DELETE FSOCIETY.Usuarios where Id = @id 
+COMMIT TRANSACTION T1
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_insert_rol')
+DROP PROCEDURE FSOCIETY.sp_insert_rol
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_insert_rol (@nombre VARCHAR(50), @habilitado BIT) AS 
+BEGIN TRANSACTION T1
+	INSERT INTO FSOCIETY.Roles (Id, Descripcion, Habilitado)
+	VALUES (NEXT VALUE FOR Id, @nombre, @habilitado)
+COMMIT TRANSACTION T1
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_get_rol_funcionalidades')
+DROP PROCEDURE FSOCIETY.sp_get_rol_funcionalidades
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_get_rol_funcionalidades(@idrol INT) AS BEGIN
+  /* Lista las funcionalidades que tiene asignado un rol */
+BEGIN TRANSACTION T1
+  SELECT func.Id, func.Descripcion
+    FROM FSOCIETY.Funcionalidades func, FSOCIETY.RolFuncionalidades rolfunc, FSOCIETY.Roles rol
+	WHERE rolfunc.IdRol = @idrol
+     AND func.Id = rolfunc.IdFuncionalidad
+     AND rol.Id = @idrol
+END 
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_insert_funcionalidad')
+DROP PROCEDURE FSOCIETY.sp_insert_funcionalidad
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_insert_funcionalidad (@idrol INT, @idfun INT) AS 
+BEGIN TRANSACTION T1
+  /* agrego funcionalidad si no existe */
+    INSERT INTO FSOCIETY.RolFuncionalidades (idRol, IdFuncionalidad)
+    VALUES (@idrol, @idfun)
+    if (@@ERROR !=0)
+        ROLLBACK TRANSACTION T1;
+COMMIT TRANSACTION T1
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_delete_funcionalidad')
+DROP PROCEDURE FSOCIETY.sp_delete_funcionalidad
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_delete_funcionalidad (@idrol INT, @idfun INT) AS 
+BEGIN TRANSACTION T1
+  DELETE FROM FSOCIETY.RolFuncionalidades
+   WHERE IdRol = @idrol
+     AND IdFuncionalidad = @idfun
+COMMIT TRANSACTION T1
+GO
+
+------------------------
+--Store Clientes
+------------------------
+IF (OBJECT_ID ('FSOCIETY.sp_set_rol_cliente') IS NOT NULL)
+	DROP PROCEDURE FSOCIETY.sp_set_rol_cliente
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_set_rol_cliente (@idCliente int)
+AS BEGIN
+BEGIN TRANSACTION
+	INSERT INTO FSOCIETY.UsuariosRoles (IdUsuario, IdRol)
+	values(@idCliente, 3)
+
+	if (@@ERROR !=0)
+        ROLLBACK TRANSACTION T1;
+COMMIT TRANSACTION
+END
+GO
+
+IF (OBJECT_ID ('FSOCIETY.sp_crear_persona') IS NOT NULL)
+  DROP PROCEDURE FSOCIETY.sp_crear_persona
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_crear_persona (@nombre NVARCHAR(255),
+                                        @apellido NVARCHAR(255),
+                                        @dni NUMERIC(18, 0),
+										@direccion NVARCHAR(255),
+                                        @fecha_nacimiento DATETIME,
+										@id INT OUTPUT)
+AS BEGIN
+    BEGIN TRANSACTION T1
+
+	set @id = (SELECT MAX(id)+1 from FSOCIETY.Personas);
+
+	insert into FSOCIETY.Personas (Nombre, Apellido, DNI, Direccion, [Fecha de Nacimiento])
+	values (@nombre, @apellido, @dni, @direccion, @fecha_nacimiento)
+
+  	Execute FSOCIETY.sp_create_user @id
+
+	if (@@ERROR !=0)
+        ROLLBACK TRANSACTION T1;
+	COMMIT TRANSACTION T1;
+END
+GO
+
+IF (OBJECT_ID ('FSOCIETY.sp_crear_cliente') IS NOT NULL)
+	DROP PROCEDURE FSOCIETY.sp_crear_cliente
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_crear_cliente (@telefono varchar(50), 
+											@mail varchar(50),
+											@codigoPostal varchar(10),
+											@idCliente int OUTPUT,
+											@habilitado int)
+AS BEGIN
+    BEGIN TRANSACTION T1
+
+	insert into FSOCIETY.Cliente(id, Telefono, Email, Codigo_Postal, Habilitado)
+	values (@idCliente, @telefono, @mail, @codigoPostal, @habilitado);
+	
+	if(@habilitado !=0)
+		execute FSOCIETY.sp_set_rol_cliente @idCliente;
+
+	if (@@ERROR !=0)
+        ROLLBACK TRANSACTION T1;
+	COMMIT TRANSACTION T1;
+	
+END
+GO
+
+IF (OBJECT_ID ('FSOCIETY.sp_get_clientes') IS NOT NULL)
+	DROP PROCEDURE FSOCIETY.sp_get_clientes
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_get_clientes (@fieldName varchar(50), @fieldValue varchar(40))
+AS BEGIN
+	select per.Id, per.Nombre, per.Apellido, per.DNI, cli.Telefono, cli.Email, 
+per.[Fecha de Nacimiento], per.Direccion, cli.Codigo_Postal, cli.Habilitado
+	from FSOCIETY.Personas per, FSOCIETY.Cliente cli, FSOCIETY.Usuarios us
+	where per.Id = us.IdPersona and us.Id = cli.Id
+		   and @fieldName = @fieldValue
+END
+GO
+
+IF (OBJECT_ID ('FSOCIETY.sp_get_cliente_by_id') IS NOT NULL)
+	DROP PROCEDURE FSOCIETY.sp_get_cliente_by_id
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_get_cliente_by_id(@id int)
+AS BEGIN
+	select per.Nombre, per.Apellido, per.DNI, cli.Telefono, cli.Email, 
+		   per.[Fecha de Nacimiento], per.Direccion, cli.Codigo_Postal, cli.Habilitado
+	from FSOCIETY.Personas per, FSOCIETY.Cliente cli, FSOCIETY.Usuarios us
+	where per.Id = us.IdPersona and us.Id = cli.Id
+	and cli.Id = @id
+END		   
+GO
+
+IF (OBJECT_ID ('FSOCIETY.sp_modificar_persona') IS NOT NULL)
+  DROP PROCEDURE FSOCIETY.sp_modificar_persona
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_modificar_persona (@nombre NVARCHAR(255),
+                                        @apellido NVARCHAR(255),
+                                        @dni NUMERIC(18, 0),
+										@direccion NVARCHAR(255),
+                                        @fecha_nacimiento DATETIME,
+										@id INT OUTPUT)
+AS BEGIN
+    BEGIN TRANSACTION T1
+
+	UPDATE FSOCIETY.Personas 
+	set Nombre= @nombre, 
+	Apellido = @apellido, 
+	DNI = @dni, 
+	Direccion = @direccion, 
+	[Fecha de Nacimiento] = @fecha_nacimiento
+	where Id = @id
+
+	if (@@ERROR !=0)
+        ROLLBACK TRANSACTION T1;
+	COMMIT TRANSACTION T1;
+END
+GO
+
+IF (OBJECT_ID ('FSOCIETY.sp_delete_rol_cliente') IS NOT NULL)
+	DROP PROCEDURE FSOCIETY.sp_delete_rol_cliente
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_delete_rol_cliente (@idCliente int)
+AS BEGIN
+BEGIN TRANSACTION T1
+	
+	DELETE FSOCIETY.UsuariosRoles 
+	WHERE IdUsuario = @idCliente
+	and IdRol = 3
+
+	if (@@ERROR !=0)
+        ROLLBACK TRANSACTION T1;
+COMMIT TRANSACTION
+END
+GO
+
+IF (OBJECT_ID ('FSOCIETY.sp_modificar_cliente') IS NOT NULL)
+	DROP PROCEDURE FSOCIETY.sp_modificar_cliente
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_modificar_cliente (@telefono varchar(50), 
+											@mail varchar(50),
+											@codigoPostal varchar(10),
+											@idCliente int OUTPUT,
+											@habilitado int)
+AS BEGIN
+    BEGIN TRANSACTION T1
+	
+
+	declare @estadoPrevio int = (select Habilitado 
+								from FSOCIETY.Chofer 
+								where Id = @idCliente)
+
+	UPDATE FSOCIETY.Cliente
+	set Telefono = @telefono, 
+	Email = @mail, 
+	Codigo_Postal = @codigoPostal, 
+	Habilitado = @habilitado
+	where Id = @idCliente
+
+	if(@estadoPrevio = 1 and @estadoPrevio != @habilitado)
+		execute FSOCIETY.sp_delete_rol_cliente @idCliente;
+
+	if (@@ERROR !=0)
+        ROLLBACK TRANSACTION T1;
+	COMMIT TRANSACTION T1;
+	
+END
+GO
+
+IF (OBJECT_ID ('FSOCIETY.sp_delete_rol_cliente') IS NOT NULL)
+	DROP PROCEDURE FSOCIETY.sp_delete_rol_cliente
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_delete_rol_cliente (@idCliente int)
+AS BEGIN
+BEGIN TRANSACTION T1
+	
+	DELETE FSOCIETY.UsuariosRoles 
+	WHERE IdUsuario = @idCliente
+	and IdRol = 3
+
+	if (@@ERROR !=0)
+        ROLLBACK TRANSACTION T1;
+COMMIT TRANSACTION
+END
+GO
+
+------------------------
+--Store Choferes
+------------------------
+
+IF (OBJECT_ID ('FSOCIETY.sp_crear_chofer') IS NOT NULL)
+	DROP PROCEDURE FSOCIETY.sp_crear_chofer
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_crear_chofer (@telefono varchar(50), 
+											@mail varchar(50),
+											@idChofer int OUTPUT,
+											@habilitado int)
+AS BEGIN
+    BEGIN TRANSACTION T1
+
+	insert into FSOCIETY.Cliente(id, Telefono, Email, Habilitado)
+	values (@idChofer, @telefono, @mail, @habilitado);
+	
+	if (@@ERROR !=0)
+        ROLLBACK TRANSACTION T1;
+	COMMIT TRANSACTION T1;
+	
+END
+GO
+
+IF (OBJECT_ID ('FSOCIETY.sp_get_chofer') IS NOT NULL)
+	DROP PROCEDURE FSOCIETY.sp_get_chofer
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_get_chofer (@fieldName varchar(50), @fieldValue varchar(40))
+AS BEGIN
+	select per.Id, per.Nombre, per.Apellido, per.DNI, cli.Telefono, cli.Email, 
+per.[Fecha de Nacimiento], per.Direccion, cli.Habilitado
+	from FSOCIETY.Personas per, FSOCIETY.Chofer cli, FSOCIETY.Usuarios us
+	where per.Id = us.IdPersona and us.Id = cli.Id
+		   and @fieldName = @fieldValue
+END
+GO
+
+IF (OBJECT_ID ('FSOCIETY.sp_get_chofer_by_id') IS NOT NULL)
+	DROP PROCEDURE FSOCIETY.sp_get_chofer_by_id
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_get_chofer_by_id(@id int)
+AS BEGIN
+	select per.Nombre, per.Apellido, per.DNI, cli.Telefono, cli.Email, 
+		   per.[Fecha de Nacimiento], per.Direccion,  cli.Habilitado
+	from FSOCIETY.Personas per, FSOCIETY.Chofer cli, FSOCIETY.Usuarios us
+	where per.Id = us.IdPersona and us.Id = cli.Id
+	and cli.Id = @id
+END		   
+GO
+
+IF (OBJECT_ID ('FSOCIETY.sp_modificar_chofer') IS NOT NULL)
+	DROP PROCEDURE FSOCIETY.sp_modificar_chofer
+GO
+
+CREATE PROCEDURE FSOCIETY.sp_modificar_chofer (@telefono varchar(50), 
+											@mail varchar(50),
+											@idChofer int OUTPUT,
+											@habilitado int)
+AS BEGIN
+    BEGIN TRANSACTION T1
+	
+
+	declare @estadoPrevio int = (select Habilitado 
+								from FSOCIETY.Chofer 
+								where Id = @idChofer)
+
+	UPDATE FSOCIETY.Cliente
+	set Telefono = @telefono, 
+	Email = @mail, 
+	Habilitado = @habilitado
+	where Id = @idChofer
+
+	if (@@ERROR !=0)
+        ROLLBACK TRANSACTION T1;
+	COMMIT TRANSACTION T1;
+	
+END
+GO
+
+----------------------------------
+--Migracion Choferes
+----------------------------------
+
+--Genero tabla temporal con los datos de los choferes
+Select distinct Chofer_Dni,Chofer_Nombre, Chofer_Apellido, Chofer_Direccion, Chofer_Fecha_Nac, Chofer_Mail, Chofer_Telefono
+into #choferes
+from gd_esquema.Maestra
+
+--Migro los datos de choferes a personas.
+insert into FSOCIETY.Personas(DNI,Nombre,Apellido,Direccion,[Fecha de Nacimiento])
+Select distinct Chofer_Dni,Chofer_Nombre, Chofer_Apellido, Chofer_Direccion, Chofer_Fecha_Nac 
+from #choferes
+
+--Genero los usuarios para todos los choferes
+DECLARE Mi_Cursor CURSOR FOR 
+Select Id from FSOCIETY.Personas p
+inner join #choferes c on c.Chofer_DNI = p.DNI
+
+DECLARE @query int
+
+OPEN Mi_Cursor
+FETCH NEXT FROM Mi_Cursor INTO @query
+
+WHILE @@FETCH_STATUS = 0
+
+BEGIN
+	EXECUTE FSOCIETY.sp_create_user @query
+	FETCH NEXT FROM Mi_Cursor INTO @query
+END
+CLOSE Mi_Cursor
+DEALLOCATE Mi_Cursor
+
+--Cargo la tabla chofer
+insert into FSOCIETY.Chofer(Id,Email,Telefono,Habilitado)
+Select u.Id,c.Chofer_Mail,c.Chofer_Telefono,1 from FSOCIETY.Personas p
+inner join #choferes c on c.Chofer_DNI = p.DNI
+inner join FSOCIETY.Usuarios u on u.IdPersona = p.Id
+
+--Hago que los usuarios tengan rol Chofer
+insert into FSOCIETY.UsuariosRoles(IdUsuario,IdRol)
+Select u.Id,(SELECT Id From FSOCIETY.Roles where Descripcion='Chofer') from FSOCIETY.Personas p
+inner join #choferes c on c.Chofer_DNI = p.DNI
+inner join FSOCIETY.Usuarios u on u.IdPersona = p.Id
+
+DROP TABLE #choferes
+
+GO
+
+----------------------------------
+--Migracion Clientes
+----------------------------------
+
+--Genero tabla temporal con los datos de los clientes
+Select distinct Cliente_Dni,Cliente_Nombre, Cliente_Apellido, Cliente_Direccion, Cliente_Fecha_Nac, Cliente_Mail, Cliente_Telefono
+into #clientes
+from gd_esquema.Maestra
+
+--Migro los datos de clientes a personas.
+insert into FSOCIETY.Personas(DNI,Nombre,Apellido,Direccion,[Fecha de Nacimiento])
+Select distinct Cliente_Dni,Cliente_Nombre, Cliente_Apellido, Cliente_Direccion, Cliente_Fecha_Nac
+from #clientes
+
+--Genero los usuarios para todos los clientes
+DECLARE Mi_Cursor CURSOR FOR 
+Select Id from FSOCIETY.Personas p
+inner join #clientes c on c.Cliente_Dni = p.DNI
+
+DECLARE @idPersona int
+
+OPEN Mi_Cursor
+FETCH NEXT FROM Mi_Cursor INTO @idPersona
+
+WHILE @@FETCH_STATUS = 0
+
+BEGIN
+	EXECUTE FSOCIETY.sp_create_user @idPersona
+	FETCH NEXT FROM Mi_Cursor INTO @idPersona
+END
+CLOSE Mi_Cursor
+DEALLOCATE Mi_Cursor
+
+--Cargo la tabla cliente
+insert into FSOCIETY.Cliente(Id,Email,Telefono,Codigo_Postal,Habilitado)
+Select u.Id,c.Cliente_Mail,c.Cliente_Telefono,'1406',1 from FSOCIETY.Personas p
+inner join #clientes c on c.Cliente_Dni = p.DNI
+inner join FSOCIETY.Usuarios u on u.IdPersona = p.Id
+
+--Hago que los usuarios tengan rol cliente
+insert into FSOCIETY.UsuariosRoles(IdUsuario,IdRol)
+Select u.Id,(SELECT Id From FSOCIETY.Roles where Descripcion='cliente') from FSOCIETY.Personas p
+inner join #clientes c on c.Cliente_Dni = p.DNI
+inner join FSOCIETY.Usuarios u on u.IdPersona = p.Id
+
+DROP TABLE #clientes
+
+GO
+
+---------------------------
+--Migracion Autos
+---------------------------
+--Migro marcas
+INSERT INTO FSOCIETY.Marcas(Description)
+SELECT DISTINCT Auto_Marca FROM gd_esquema.Maestra
+
+--Migro Modelos
+INSERT INTO FSOCIETY.Modelos(Description,IdMarca)
+SELECT DISTINCT Auto_Modelo,m.Id FROM gd_esquema.Maestra AS maestra
+INNER JOIN FSOCIETY.Marcas AS m ON m.Description = maestra.Auto_Marca
+
+
+-- Migro Turnos
+INSERT INTO FSOCIETY.Turnos(Hora_De_Inicio, Hora_De_Finalizacion, Descripcion, Valor_Km, Precio_Base, Habilitado)
+	SELECT DISTINCT Turno_Hora_Inicio, Turno_Hora_Fin, Turno_Descripcion, Turno_Valor_Kilometro, Turno_Precio_Base, 1 FROM gd_esquema.Maestra
+
+-- Migro Autos
+INSERT INTO FSOCIETY.Autos(Patente, IdModelo, IdChofer, Habilitado)
+	SELECT DISTINCT	MAESTRA.Auto_Patente, MODELOS.Id, CHOFER.Id, 1 
+		FROM gd_esquema.Maestra MAESTRA
+			INNER JOIN FSOCIETY.Modelos MODELOS ON MAESTRA.Auto_Modelo = MODELOS.Description
+			INNER JOIN FSOCIETY.Chofer CHOFER ON MAESTRA.Chofer_Telefono = CHOFER.Telefono
+
+			-- Migro Autos con turnos
+insert into FSOCIETY.AutosTurnos(IdAuto,IdTurno)
+	Select distinct a.Id,t.Id FROM gd_esquema.Maestra m
+		inner join FSOCIETY.Autos a on a.Patente = m.Auto_Patente
+		inner join FSOCIETY.Turnos t on t.Descripcion = m.Turno_Descripcion
