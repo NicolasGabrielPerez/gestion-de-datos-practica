@@ -47,3 +47,70 @@ and prod_codigo=item_producto
 ) < sum(i.item_cantidad)
 go
 
+-- Ejerc 7
+
+select p.prod_codigo,p.prod_detalle,max(i.item_precio) maximo, min(i.item_precio) minimo,
+	((max(i.item_precio) - min(i.item_precio))*100/min(i.item_precio))as delta 
+	from dbo.Producto p inner join dbo.Item_Factura i on
+	p.prod_codigo = i.item_producto
+ group by p.prod_codigo,p.prod_detalle
+
+ go
+
+ -- Ejerc 8
+
+ select p.prod_detalle , max(s.stoc_cantidad) as maximo_stock
+	from dbo.Producto p inner join dbo.STOCK s on s.stoc_producto = p.prod_codigo
+	group by p.prod_detalle, s.stoc_deposito
+	having count(s.stoc_deposito) = (select count(*) from dbo.DEPOSITO )
+
+-- Ejerc 9
+
+select e.empl_codigo as empleado, j.empl_codigo as jefe ,j.empl_nombre as nombre_jefe,
+	(select count(dep.depo_codigo) from dbo.Departamento d inner join dbo.DEPOSITO dep on 
+		dep.depo_zona = d.depa_zona where d.depa_codigo =e.empl_departamento or d.depa_codigo = j.empl_departamento) as cantidad_de_depositos
+	from dbo.Empleado e inner join dbo.Empleado j on j.empl_codigo=e.empl_jefe
+
+
+-- Ejerc 10
+
+select top 10 sum(i.item_cantidad)as cantidad,i.item_producto ,
+	(
+	select  top 1 fac.fact_cliente from Factura fac inner join dbo.Item_Factura i2 on
+	 i2.item_numero=fac.fact_numero and i2.item_sucursal =fac.fact_sucursal and i2.item_tipo=fac.fact_tipo
+	 where i2.item_producto=i.item_producto
+	 group by i2.item_producto,fac.fact_cliente
+	 order by sum(i2.item_cantidad) desc
+	)as cliente
+	from dbo.Factura f inner join dbo.Item_Factura i on
+	 i.item_numero=f.fact_numero and i.item_sucursal =f.fact_sucursal and i.item_tipo=f.fact_tipo
+	group by i.item_producto
+	order by cantidad desc
+
+select top 10 sum(i.item_cantidad)as cantidad,i.item_producto,(
+	select  top 1 fac.fact_cliente from Factura fac inner join dbo.Item_Factura i2 on
+	 i2.item_numero=fac.fact_numero and i2.item_sucursal =fac.fact_sucursal and i2.item_tipo=fac.fact_tipo
+	 where i2.item_producto=i.item_producto
+	 group by i2.item_producto,fac.fact_cliente
+	 order by sum(i2.item_cantidad) desc
+	) as cliente
+from dbo.Factura f inner join dbo.Item_Factura i on
+	 i.item_numero=f.fact_numero and i.item_sucursal =f.fact_sucursal and i.item_tipo=f.fact_tipo
+	group by i.item_producto
+	order by cantidad asc
+
+
+
+-- ejerc 11 incompleta
+select f.fami_detalle, count(p.prod_codigo)  from dbo.Producto p inner join dbo.Familia f on f.fami_id = p.prod_familia
+
+	
+	group by p.prod_familia,f.fami_detalle
+
+select *  from dbo.Producto p inner join dbo.Familia f on f.fami_id = p.prod_familia
+
+
+
+
+
+
