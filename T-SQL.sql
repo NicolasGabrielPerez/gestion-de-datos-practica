@@ -61,7 +61,7 @@ else
 	return @cant;
 	end;
 end
-
+go
 --eje 4
 /*
 Create table dbo.Fact_table
@@ -95,3 +95,22 @@ end
 -- eje 5
 
 
+-- eje 14
+
+create trigger dbo.salariomaximo
+on dbo.Empleado INSTEAD of insert, update
+as
+begin
+declare @empleado int;
+declare @salario int
+	if EXISTS (select i.empl_salario,  i.empl_codigo from inserted i)
+	begin
+	create table #salarios  (salario int, jefe int);
+	insert into #salarios select sum(empl_salario) as salario, empl_jefe as jefe from Empleado where empl_jefe is not null group by empl_jefe;
+	select * from Empleado where empl_codigo; 
+end
+else
+commit TRANSACTION;
+return
+end; 
+go	
